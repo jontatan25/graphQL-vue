@@ -1,16 +1,6 @@
 <script>
-import gql from "graphql-tag";
 import { useQuery } from "@vue/apollo-composable";
-
-const ALL_BOOKS_QUERY = gql`
-  query AllBooks {
-    allBooks {
-      id
-      title
-      rating
-    }
-  }
-`;
+import ALL_BOOKS_QUERY from './graphql/allBooks.query.gql'
 export default {
   name: "App",
   setup() {
