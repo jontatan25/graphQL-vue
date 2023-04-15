@@ -1,5 +1,25 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
+<script>
+import gql from "graphql-tag";
+import { useQuery } from "@vue/apollo-composable";
+
+const ALL_BOOKS_QUERY = gql`
+  query AllBooks {
+    allBooks {
+      id
+      title
+      rating
+    }
+  }
+`;
+export default {
+  name: "App",
+  setup() {
+    const {result} = useQuery(ALL_BOOKS_QUERY);
+    console.log(result);
+    // useQuery Performs query, handlesloading and error,returns result to components
+    return { result };
+  },
+};
 </script>
 
 <template>
@@ -11,7 +31,11 @@ import HelloWorld from './components/HelloWorld.vue'
       <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
     </a>
   </div>
-  <HelloWorld msg="Vite + Vue" />
+  <div>
+    <p v-for="book in result.allBooks" :key="book.id">
+      {{ book.title }}
+    </p>
+  </div>
 </template>
 
 <style scoped>
