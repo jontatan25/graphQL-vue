@@ -1,21 +1,3 @@
-<script>
-import { useQuery } from "@vue/apollo-composable";
-import ALL_BOOKS_QUERY from "./graphql/allBooks.query.gql";
-import { ref } from "vue";
-export default {
-  name: "App",
-  setup() {
-    const searchTerm = ref("");
-    const { result, loading, error } = useQuery(ALL_BOOKS_QUERY, () => ({
-      search: searchTerm.value,
-    }));
-    console.log(result);
-    // useQuery Performs query, handlesloading and error,returns result to components
-    return { result, searchTerm, loading, error };
-  },
-};
-</script>
-
 <template>
   <div>
     <a href="https://vitejs.dev" target="_blank">
@@ -27,15 +9,44 @@ export default {
   </div>
   <div>
     <input type="text" v-model="searchTerm" />
-    <p v-if="loading">... Loading</p>
-    <p v-else-if="error">... Oops something went wrong, please try again</p>
+    <p v-if="loading">Loading...</p>
+    <p v-else-if="error">Something went wrong! Please try again</p>
     <template v-else>
-    <p v-for="book in result.allBooks" :key="book.id">
-      {{ book.title }}
-    </p>
-  </template>
+      <p v-for="book in books" :key="book.id">
+        {{ book.title }}
+      </p>
+    </template>
   </div>
 </template>
+
+<script>
+import { ref, computed } from "vue";
+import { useQuery } from "@vue/apollo-composable";
+import ALL_BOOKS_QUERY from "./graphql/allBooks.query.gql";
+export default {
+  name: "App",
+  setup() {
+    const searchTerm = ref("");
+    const { result, loading, error } = useQuery(
+      ALL_BOOKS_QUERY,
+      () => ({
+        search: searchTerm.value,
+      }),
+      () => ({
+        debounce: 500,
+        enabled: searchTerm.value.length > 2,
+      })
+    );
+    const books = computed(() => {
+      const allBooks = result.value?.allBooks || [];
+      return allBooks.map((book) => ({
+        title: book.title,
+      }));
+    });
+    return { books, searchTerm, loading, error };
+  },
+};
+</script>
 
 <style scoped>
 .logo {
