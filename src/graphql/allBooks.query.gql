@@ -1,6 +1,6 @@
 
-  query AllBooks {
-    allBooks {
+  query AllBooks($search: String) {
+    allBooks(search: $search) {
       id
       title
       rating
